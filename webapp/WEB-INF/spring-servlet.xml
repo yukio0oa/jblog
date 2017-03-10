@@ -80,7 +80,6 @@
 
 		<!-- defaultEncoding -->
 		<property name="defaultEncoding" value="utf-8" />
-
 	</bean>
 
 	<!-- 기본 뷰 리졸버 -->

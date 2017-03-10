@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bit2017.jblog.dto.JSONResult;
 import com.bit2017.jblog.service.UserService;
+import com.bit2017.jblog.vo.BlogVo;
+import com.bit2017.jblog.vo.CategoryVo;
 import com.bit2017.jblog.vo.UserVo;
 
 @Controller
@@ -62,5 +64,9 @@ public class UserController {
 		return "user/login";
 	}
 	
-
+	@RequestMapping("/logout")
+	public String logout() {
+		return "user/logout";
+	}
+	
 }

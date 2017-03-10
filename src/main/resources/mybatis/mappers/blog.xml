@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blog">
+
+	<select id="getList" resultType="blogvo">
+		<![CDATA[
+		  select blog_id as blogId,
+		  		 title,
+		  		 logo
+		    from blog
+		   
+		]]>	
+	</select>
+	
+	<select id="maxPost" resultType="long" parameterType="string">
+		<![CDATA[
+		  select max(pno) as pno
+			from category c, post p
+		 where c.BLOG_ID= #{blogId } and c.cno=p.CNO
+		]]>	
+	</select>
+	
+	<select id="catemaxPost" resultType="long" parameterType="map">
+		<![CDATA[
+		  select max(pno) as pno
+			from category c, post p
+		 where c.BLOG_ID= #{blogId } and c.cno=p.CNO and c.cno=#{cno }
+		]]>	
+	</select>
+	
+	<select id="view" resultType="postvo" parameterType="long">
+		<![CDATA[
+		  select ptitle,
+		  		 content,
+		  		 reg_date as regDate,
+		  		 cno
+		    from post
+		  where pno = #{pno }
+		]]>	
+	</select>
+	
+	
+	
+	<select id="getInfo" resultType="blogvo" parameterType="string">
+		<![CDATA[
+		  select blog_id as blogId,
+		  		 title,
+		  		 logo
+		    from blog
+		  where blog_id = #{blogId }
+		]]>	
+	</select>
+	
+	<select id="cateListView" resultType="postvo" parameterType="long">
+		<![CDATA[
+		  select pno,
+		  		 ptitle,
+		  		 content,
+		  		 reg_date as regDate,
+		  		 cno
+		    from post
+		  where cno = #{cno }
+		]]>	
+	</select>
+	
+	<select id="postList" resultType="postvo">
+		<![CDATA[
+		  select pno,
+		  		 ptitle,
+		  		 content,
+		  		 reg_date as regDate,
+		  		 cno
+		    from post
+		]]>	
+	</select>
+	
+	<insert id="insert" parameterType="blogvo">
+		<![CDATA[
+		insert
+			into blog
+		values (#{blogId }, #{title }, #{logo })
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="blogvo">
+		<![CDATA[
+		update blog
+			set title= #{title }
+		]]>
+		<if test="logo != ''">
+			<![CDATA[
+				,logo=#{logo }
+			]]>
+		</if>
+		<![CDATA[
+		where blog_id=#{blogId }
+		]]>
+	</update>
+	
+	<insert id="write" parameterType="postvo">
+		<selectKey keyProperty="pno" resultType="long" order="BEFORE">
+			<![CDATA[
+			select seq_post.nextval from dual	
+			]]>
+		</selectKey>
+		<![CDATA[
+				insert 
+					into post 
+				values (#{pno }, #{ptitle }, #{content }, sysdate, #{cno })
+			]]>
+	</insert>
+	
+</mapper>

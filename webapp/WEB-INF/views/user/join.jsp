@@ -109,7 +109,7 @@ $(function(){
 </head>
 <body>
 	<div class="center-content">
-		<c:import url="/WEB-INF/views/include/header.jsp" />
+		<c:import url="/WEB-INF/views/include/userheader.jsp" />
 		<form:form 
 			modelAttribute="userVo"
 		    id="join-form"

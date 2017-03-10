@@ -1,6 +1,6 @@
 package com.bit2017.jblog.vo;
 
-public class Category {
+public class CategoryVo {
 	private Long cno;
 	private String cname;
 	private String description;

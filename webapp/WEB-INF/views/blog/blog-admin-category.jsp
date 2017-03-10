@@ -8,55 +8,141 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>JBlog</title>
 <Link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/jblog.css">
+<script type="text/javascript" src="${pageContext.request.contextPath }/assets/js/jquery/jquery-1.9.0.js"></script>
 </head>
+<script>
+var dialogDeleteForm = null;
+var isEnd = false;
+var page = 0;
+var render = function( vo, prepend ){
+	var html = " <tr id='del-" + vo.cno + "'> " +
+			   " 	<td> " + vo.cno + " </td> " +
+			   " 	<td> " + vo.cname + " </td> " +
+			   " 	<td>10</td> " +
+			   " 	<td> " + vo.description + " </td> " +
+			   " 	<td> " +
+			   " 		<a href='#' data-no=" + vo.cno + ">" +
+			   " 			<img src=" + " ${pageContext.request.contextPath}/assets/images/delete.jpg" + " > " +
+			   " 		</a> " +
+			   " 	</td> " +
+			   " </tr> " 
+	
+	if( prepend == true ) {
+		$( "#list" ).prepend( html );
+	} else {
+		$( "#list" ).append( html );
+	}
+}
+
+ var fetchList = function(){
+	if( isEnd == true ) {
+		return;
+	}
+	console.log( "!" );
+	$.ajax( {
+		url : "/jblog/list",
+		type: "get",
+	    dataType: "json",
+	    data: "",
+	    success: function( response ){
+	    	if( response.result != "success" ) {
+	    		console.log( response.message );
+	    		return;
+	    	} 
+	    	if( response.data.length == 0 ) {
+	    		isEnd = true;
+	    		return;	
+	    	}
+	    	$( response.data ).each( function(index, vo){
+	    		render( vo, false );
+	    	});
+	    },
+	    error: function( XHR, status, error ){
+	       console.error( status + " : " + error );
+	   	}
+  });
+}
+ 
+$(function(){
+	$( "#write-form" ).submit( function(event){
+		// 폼의 submit 기본 이벤트 처리를 막는다.
+		event.preventDefault();
+		
+		/* ajax 입력 */
+		$.ajax( {
+			url : "/jblog/add",
+			type: "post",
+		    dataType: "json",
+		    data: "cname=" + $("input[name='name']").val() + "&" + 
+		    	  "blogId=" + $("input[name='blogId']").val() + "&" +
+		          "description=" + $("input[name='desc']").val(),
+		    success: function( response ){
+				console.log( response );
+				render( response.data, false );
+				$("input[type='text']").val("");
+		    },
+		    error: function( XHR, status, error ){
+		       console.error( status + " : " + error );
+		   	}
+	    });
+		return false;
+	});
+	
+	//삭제 버튼 클릭 이벤트 매핑(Live Event Mapping)
+	$( document ).on( "click", "#list tr td a", function(event){
+		event.preventDefault();
+		var $a = $(this);
+		var no = $a.attr( "data-no" );
+		console.log( no );
+		 $.ajax( {
+			url : "/jblog/delete",
+			type: "post",
+		    dataType: "json",
+		    data: "cno=" + no,
+		    success: function( response ){
+				console.log( response.data );
+				$( "#del-" + response.data ).remove();
+		    },
+		    error: function( XHR, status, error ){
+		       console.error( status + " : " + error );
+		   	}
+	    });
+	});
+});
+</script>
+
 <body>
 	<div id="container">
-		<div id="header">
-			<h1>Spring 이야기</h1>
-			<ul>
-				<li><a href="">로그인</a></li>
-				<li><a href="">로그아웃</a></li>
-				<li><a href="">블로그 관리</a></li>
-			</ul>
-		</div>
+		<c:import url="/WEB-INF/views/include/blogheader.jsp" />
 		<div id="wrapper">
 			<div id="content" class="full-screen">
-				<ul class="admin-menu">
-					<li><a href="">기본설정</a></li>
-					<li class="selected">카테고리</li>
-					<li><a href="">글작성</a></li>
-				</ul>
-		      	<table class="admin-cat">
+				<c:import url="/WEB-INF/views/include/blognavigation.jsp" />
+		      	<table class="admin-cat" id="list">
 		      		<tr>
 		      			<th>번호</th>
 		      			<th>카테고리명</th>
 		      			<th>포스트 수</th>
 		      			<th>설명</th>
-		      			<th>삭제</th>      			
+		      			<th>삭제</th>		
 		      		</tr>
-					<tr>
-						<td>3</td>
-						<td>미분류</td>
+		      		
+		      		<c:forEach items="${list }" var="vo" varStatus="status">	
+					<tr id="del-${vo.cno }">
+						<td>${vo.cno }</td>
+						<td>${vo.cname }</td>
 						<td>10</td>
-						<td>카테고리를 지정하지 않은 경우</td>
-						<td><img src="${pageContext.request.contextPath}/assets/images/delete.jpg"></td>
-					</tr>  
-					<tr>
-						<td>2</td>
-						<td>스프링 스터디</td>
-						<td>20</td>
-						<td>어쩌구 저쩌구</td>
-						<td><img src="${pageContext.request.contextPath}/assets/images/delete.jpg"></td>
+						<td>${vo.description }</td>
+						<td>
+							<a href="#" data-no="${vo.cno }" >
+								<img src="${pageContext.request.contextPath}/assets/images/delete.jpg">
+							</a>
+						</td>
 					</tr>
-					<tr>
-						<td>1</td>
-						<td>스프링 프로젝트</td>
-						<td>15</td>
-						<td>어쩌구 저쩌구</td>
-						<td><img src="${pageContext.request.contextPath}/assets/images/delete.jpg"></td>
-					</tr>					  
+					</c:forEach>			  
 				</table>
-      	
+				
+      		<form id="write-form" action="" method="post">
+      			<input type="hidden" name="blogId" value="${authUser.userId }">
       			<h4 class="n-c">새로운 카테고리 추가</h4>
 		      	<table id="admin-cat-add">
 		      		<tr>
@@ -71,14 +157,11 @@
 		      			<td class="s">&nbsp;</td>
 		      			<td><input type="submit" value="카테고리 추가"></td>
 		      		</tr>      		      		
-		      	</table> 
+		      	</table>
+		      </form>
 			</div>
 		</div>
-		<div id="footer">
-			<p>
-				<strong>Spring 이야기</strong> is powered by JBlog (c)2016
-			</p>
-		</div>
+		<c:import url="/WEB-INF/views/include/footer.jsp" />
 	</div>
 </body>
 </html>

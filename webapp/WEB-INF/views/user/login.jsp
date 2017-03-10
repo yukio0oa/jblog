@@ -12,7 +12,7 @@
 </head>
 <body>
 	<div class="center-content">
-		<c:import url="/WEB-INF/views/include/header.jsp" />
+		<c:import url="/WEB-INF/views/include/userheader.jsp" />
 		<form class="login-form" name="loginform" method="post" action="${pageContext.request.contextPath }/user/login">
       		<label>아이디</label> <input type="text" name="userId">
       		<label>패스워드</label> <input type="text" name="password">

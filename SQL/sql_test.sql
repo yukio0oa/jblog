@@ -5,10 +5,15 @@ insert into users values ('rhgpdud95', 'aa', 'aa', sysdate);
 select * from users;
 select * from blog;
 select * from category;
+select * from post;
 
 commit;
+rollback;
 
-delete from users where user_id='aa';
+delete from users where password='1234';
+delete from blog where blog_id='rhgpdud95';
+delete from category where cno=2;
+
 
 
 select user_id as userId, name
@@ -17,24 +22,33 @@ select user_id as userId, name
 		 
 select user_id as userId, name from users where user_id = 'ddddd' and password = '1234';
 
-insert all into users values ('rhgpdud95', '고혜영', '1234', sysdate)
-		   into blog values ('rhgpdud95')
-		   into category values ('rhgpdud95')
-	select user_id, name, password, reg_date
-		from users
-	where user_id = 'rhgpdud95';
+insert into blog values ('rhgpdud95', 'title', 'logo');
 
-insert all into users values (user_id, name, password, reg_date)
-		   into blog values (user_id)
-		   into category values (user_id)
-	select user_id, name, password, reg_date
-		from users
-	where user_id = 'rhgpdud95';
+update blog set title= '', logo='201712752437937.jpg' where blog_id='rhgpdud95'; 
+
+select	 cno, 
+		 cname,
+		 description,
+		 to_char(reg_date, 'yyyy-mm-dd') as regDate 
+		    from category
+		order by cno desc;
+		
+insert into category values (seq_category.nextval, 'name', 'content', sysdate, 'rhgpdud95');
+
+select max(pno),
+	   p.ptitle,
+	   p.content,
+	   p.reg_date,
+	   c.blog_id,
+	   c.cno
+	from category c, post p
+where c.BLOG_ID='rhgpdud95' and c.cno=p.CNO;
+
+select max(pno), c.BLOG_ID
+	from post p, category c
+where p.cno = c.cno
+group by blog_id;
 
 
-insert all into users values (user_id, name, password, reg_date)
-	   into blog values (user_id, title, logo)
-	   into category values (cno, cname, description, reg_date, user_id)
-select user_id, name, password, reg_date
-	from users
-where user_id = 'rhgpdud95';
+
+
